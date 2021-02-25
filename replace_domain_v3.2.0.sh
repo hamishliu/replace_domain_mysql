@@ -5,19 +5,14 @@ cd `dirname $0`
 work_dir=$(pwd)
 coding_tool_dir="/data/coding-tools"
 
-#DB_HOST="9.134.113.188"   #手动指定IP
 [ $(kubectl -ncoding get svc |grep -w 'mysql '|wc -l) -eq 1 ] && DB_HOST=$(kubectl -ncoding get svc |grep -w 'mysql '|awk '{print $3}') || DB_HOST=$(kubectl -ncoding get cm infra-mysql-cm -o jsonpath={.data.host})    #自动获取当前DB地址
 
-#DB_PORT=3306      ##手动指定端口
 [ $(kubectl -ncoding get svc |grep mysql|grep 3306|wc -l) -eq 1 ] && DB_PORT=3306 || DB_PORT=$(kubectl -ncoding get cm infra-mysql-cm -o jsonpath={.data.port})  #自动获取D 端口
 
-#DB_USER="root"
 DB_USER=$(kubectl -ncoding get cm infra-mysql-cm -o jsonpath={.data.username})
 
-#DB_PASSWD="488581ee7a751d2ba51a3ac9dad6e1b8"  #手动指定密码
 DB_PASSWD=$(kubectl -ncoding get cm infra-mysql-cm -o jsonpath={.data.password})    #自动获取当前环境密码
 
-#old_domain="coding.io"  #手动指定旧域名
 old_domain=$(cat $coding_tool_dir/apps/coding-helm/values.yaml |grep private_domain |awk -F ' ' '{print $2}')  #自动获取当前环境域名
 new_domain=$old_domain
 record_date=$(date +\%Y-\%m-\%d_\%H\%M\%S)
